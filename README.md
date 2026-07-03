@@ -88,28 +88,61 @@ Example of `let` output:
 
 ## Adding to a project
 
-Add as a dependency and reference the aliases in your project `deps.edn`:
+Pick one coordinate style. The `:git/sha` and `:mvn/version` values below are
+placeholders — replace `<SHA>` with a real commit hash and `<VERSION>` with a
+published version.
+
+### From git (no publish required)
 
 ```clojure
 {:aliases
- {:lint            {:deps {io.github.enajski/codestyle {:mvn/version "VERSION"}}
+ {:lint            {:deps {io.github.enajski/codestyle
+                           {:git/url "https://github.com/enajski/codestyle.git"
+                            :git/sha "<SHA>"}}
                     :main-opts ["-m" "codestyle.lint"]}
-  :basic-format    {:deps {io.github.enajski/codestyle {:mvn/version "VERSION"}}
+  :basic-format    {:deps {io.github.enajski/codestyle
+                           {:git/url "https://github.com/enajski/codestyle.git"
+                            :git/sha "<SHA>"}}
                     :main-opts ["-m" "codestyle.basic-format"]}
-  :advanced-format {:deps {io.github.enajski/codestyle {:mvn/version "VERSION"}}
+  :advanced-format {:deps {io.github.enajski/codestyle
+                           {:git/url "https://github.com/enajski/codestyle.git"
+                            :git/sha "<SHA>"}}
                     :main-opts ["-m" "codestyle.advanced-format"]}}}
 ```
 
-Override the defaults with project-specific paths and settings in the aliases:
+Latest SHA on `main`:
+
+```bash
+clojure -Sresolve-tags     # if you tag releases
+# or
+git ls-remote https://github.com/enajski/codestyle.git main
+```
+
+### Local checkout
 
 ```clojure
 {:aliases
- {:lint            {:deps {io.github.enajski/codestyle {:mvn/version "VERSION"}}
-                    :main-opts ["-m" "codestyle.lint" "src" "test" "api"]}
-  :basic-format    {:deps {io.github.enajski/codestyle {:mvn/version "VERSION"}}
-                    :main-opts ["-m" "codestyle.basic-format" "fix" "src" "test" "api"]}
-  :advanced-format {:deps {io.github.enajski/codestyle {:mvn/version "VERSION"}}
-                    :main-opts ["-m" "codestyle.advanced-format" "fix" "src" "test" "api"]}}}
+ {:lint            {:deps {io.github.enajski/codestyle
+                           {:local/root "../codestyle"}}
+                    :main-opts ["-m" "codestyle.lint"]}}}
+```
+
+### Published jar (after `clojure -T:build install` or a real release)
+
+```clojure
+{:aliases
+ {:lint            {:deps {io.github.enajski/codestyle {:mvn/version "<VERSION>"}}
+                    :main-opts ["-m" "codestyle.lint"]}
+  :basic-format    {:deps {io.github.enajski/codestyle {:mvn/version "<VERSION>"}}
+                    :main-opts ["-m" "codestyle.basic-format"]}
+  :advanced-format {:deps {io.github.enajski/codestyle {:mvn/version "<VERSION>"}}
+                    :main-opts ["-m" "codestyle.advanced-format"]}}}
+```
+
+Override the defaults with project-specific paths and settings by extending `:main-opts`:
+
+```clojure
+:main-opts ["-m" "codestyle.basic-format" "fix" "src" "test" "api"]
 ```
 
 ## CI integration
