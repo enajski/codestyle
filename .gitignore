@@ -1,14 +1,23 @@
-pom.xml
-pom.xml.asc
+# Build output
+/target/
 *.jar
 *.class
-/lib/
-/classes/
-/target/
-/checkouts/
-.lein-deps-sum
-.lein-repl-history
-.lein-plugins/
-.lein-failures
-.nrepl-port
+pom.xml
+pom.xml.asc
+
+# tools.deps
 .cpcache/
+
+# REPL / tooling caches
+.nrepl-port
+.clj-kondo/.cache/
+.lsp/.cache/
+
+# Editors
+.idea/
+*.iml
+.vscode/
+.calva/
+
+# OS
+.DS_Store

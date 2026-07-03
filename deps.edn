@@ -1,0 +1,21 @@
+{:deps
+ {org.clojure/clojure {:mvn/version "1.12.3"}
+  clj-kondo/clj-kondo {:mvn/version "2025.10.23"}
+  dev.weavejester/cljfmt {:mvn/version "0.15.5"}
+  zprint/zprint {:mvn/version "1.2.9"}}
+
+ :paths ["src" "resources"]
+
+ :aliases
+ {:build
+  {:deps {io.github.clojure/tools.build {:mvn/version "0.10.6"}}
+   :ns-default build}
+
+  :lint
+  {:main-opts ["-m" "codestyle.lint"]}
+
+  :basic-format
+  {:main-opts ["-m" "codestyle.basic-format"]}
+
+  :advanced-format
+  {:main-opts ["-m" "codestyle.advanced-format"]}}}
