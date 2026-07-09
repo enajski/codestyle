@@ -18,4 +18,8 @@
   {:main-opts ["-m" "codestyle.basic-format"]}
 
   :advanced-format
-  {:main-opts ["-m" "codestyle.advanced-format"]}}}
+  {:main-opts ["-m" "codestyle.advanced-format"]}
+
+  :test
+  {:extra-paths ["test"]
+   :main-opts ["-m" "codestyle.zprint-test"]}}}
