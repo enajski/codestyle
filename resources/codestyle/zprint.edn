@@ -4,10 +4,12 @@
 ;; previous visual rules, but tightens the custom :option-fn guides around
 ;; cases zprint can reach while recursively formatting nested lists:
 ;;
-;;   1. Anonymous-fn literals `#(...)` expand to `(fn* ...)`. For cond->/cond->>
-;;      fallbacks, the same :option-fn can be re-invoked on that inner fn* list;
-;;      those versions detect the inner `(fn* ...)` and hand it back to zprint's
-;;      default list formatter with `{:guide [:element-*]}`.
+;;   1. `:option-fn` guides can be re-invoked on nested lists when a fallback
+;;      returns only `{:guide [:element-*]}`. Anonymous-fn literals `#(...)`
+;;      expand to `(fn* ...)`, so the `fn*` guard in cond->/cond->> is reached
+;;      during recursive descent, not while formatting the outer threading form.
+;;      It hands that inner list back to zprint's default formatter and disables
+;;      further recursive :option-fn calls.
 ;;   2. The cond->/cond->> guides now distinguish normal forms with an init slot
 ;;      (even `len`) from recursively-descended, no-init list shapes (odd `len`).
 ;;      The old `(quot (- len 2) 2)` only counted the init-slot shape correctly.
@@ -52,6 +54,11 @@
   "filter" :hang
   "reduce" :hang
 
+  ;; The fn* branch below is for recursively-reached anonymous-fn literals,
+  ;; not for the outer cond->/cond->> form (whose first element is cond-> or
+  ;; cond->>). When the no-pair fallback is used, zprint may keep invoking this
+  ;; same option-fn on inner lists unless we stop at fn* and disable further
+  ;; list option-fn recursion.
   "cond->"
   [:guided
    {:list

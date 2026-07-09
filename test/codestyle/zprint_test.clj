@@ -38,11 +38,14 @@
 
   b
   (#(g %)))
-"
-           (format-source "(cond->
+" (format-source "(cond->
   a (f)
   b (#(g %)))
-")))))
+"))))
+  (testing "cond-> anonymous-fn init falls back without recursing into fn*"
+    (is (= "(cond-> #(assoc % :a 1))" (format-source "(cond-> #(assoc % :a 1))"))))
+  (testing "cond->> anonymous-fn init falls back without recursing into fn*"
+    (is (= "(cond->> #(filter odd? %))" (format-source "(cond->> #(filter odd? %))")))))
 
 (deftest binding-form-guides
   (testing "if-let uses the single-binding compact layout"
