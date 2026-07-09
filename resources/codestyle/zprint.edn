@@ -1,16 +1,16 @@
 ;; Bundled default zprint config for codestyle's :advanced-format.
 ;;
-;; Adopted from the vis project's battle-tested `.zprint.edn`. It is a strict
-;; superset of the previous bundled config: every form's :option-fn now guards
-;; the two cases the old guides mis-handled in real code —
+;; Adopted from the vis project's battle-tested `.zprint.edn`. It keeps the
+;; previous visual rules, but tightens the custom :option-fn guides around
+;; cases zprint can reach while recursively formatting nested lists:
 ;;
-;;   1. Anonymous-fn args `#(...)` / `(fn* ...)` passed to cond->/cond->>/if-let
-;;      etc. The old guide assumed a binding/pair shape and produced a broken
-;;      or crashing guide; these versions detect `(= 'fn* (first sexpr))` and
-;;      fall back to `{:guide [:element-*]}`.
-;;   2. `cond->`/`cond->>` WITH an initial value (even arg count). The old
-;;      `(quot (- len 2) 2)` assumed no init and dropped/mis-paired a clause;
-;;      these versions branch on `has-init? (even? len)`.
+;;   1. Anonymous-fn literals `#(...)` expand to `(fn* ...)`. For cond->/cond->>
+;;      fallbacks, the same :option-fn can be re-invoked on that inner fn* list;
+;;      those versions detect the inner `(fn* ...)` and hand it back to zprint's
+;;      default list formatter with `{:guide [:element-*]}`.
+;;   2. The cond->/cond->> guides now distinguish normal forms with an init slot
+;;      (even `len`) from recursively-descended, no-init list shapes (odd `len`).
+;;      The old `(quot (- len 2) 2)` only counted the init-slot shape correctly.
 ;;
 ;; Same visual rules as before (see README) — only the edge-case handling and
 ;; the fn-map coverage (when-let/when-some/if-let/if-some) are stronger.
@@ -204,20 +204,18 @@
   [:guided
    {:list
     {:option-fn (fn [options len sexpr]
-                  (if (= 'fn* (first sexpr))
-                    {:guide [:element-*] :next-inner {:list {:option-fn nil}}}
-                    (let [pair-count   (quot (count (second sexpr)) 2)
-                          single-pair? (= pair-count 1)
-                          body-count   (- len 2)
-                          newlines     (if single-pair? [:newline] [:newline :newline])
-                          guide        (into (into [:element :element-binding-vec] newlines)
-                                         (when (pos? body-count)
-                                           (into [:element-best]
-                                             (mapcat (fn [_] [:newline :element-best])
-                                               (range (dec body-count))))))]
-                      (cond-> {:guide guide :next-inner {:list {:option-fn nil}}}
-                        single-pair? (merge {:binding {:flow?         false
-                                                       :nl-separator? false}})))))}}]
+                  (let [pair-count   (quot (count (second sexpr)) 2)
+                        single-pair? (= pair-count 1)
+                        body-count   (- len 2)
+                        newlines     (if single-pair? [:newline] [:newline :newline])
+                        guide        (into (into [:element :element-binding-vec] newlines)
+                                       (when (pos? body-count)
+                                         (into [:element-best]
+                                           (mapcat (fn [_] [:newline :element-best])
+                                             (range (dec body-count))))))]
+                    (cond-> {:guide guide :next-inner {:list {:option-fn nil}}}
+                      single-pair? (merge {:binding {:flow?         false
+                                                     :nl-separator? false}}))))}}]
 
   "if-some"
   [:guided
