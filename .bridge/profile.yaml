@@ -1,0 +1,75 @@
+subsystems:
+- name: codestyle
+  code-globs:
+  - src/**/*.clj
+  - resources/**/*.edn
+  docs-globs:
+  - README.md
+  test-globs: []
+  expected-artifacts:
+  - change-intent-card
+  - verification-brief
+  - completeness-ledger
+  expected-evidence:
+  - lint
+  - format
+  system-category: other
+  risk-class: medium
+file-glob-rules:
+- glob: src/**/*.clj
+  subsystem: codestyle
+  mechanism-family: implementation-change
+  concern-class: code-level
+  risk-note: CLI implementation changes can break downstream codestyle checks.
+- glob: resources/**/*.edn
+  subsystem: codestyle
+  mechanism-family: configuration-change
+  concern-class: spec-fidelity
+  risk-note: Bundled formatter configuration changes can break formatting conformance.
+- glob: README.md
+  subsystem: codestyle
+  mechanism-family: documentation-change
+  concern-class: spec-fidelity
+  risk-note: Documentation changes should stay aligned with runnable aliases and CI.
+- glob: deps.edn
+  subsystem: codestyle
+  mechanism-family: dependency-change
+  concern-class: code-level
+  risk-note: Alias changes can break the documented codestyle commands.
+- glob: .github/workflows/**/*.yml
+  subsystem: codestyle
+  mechanism-family: ci-change
+  concern-class: code-level
+  risk-note: CI changes control whether Bridge evidence is enforced.
+- glob: .bridge/**/*.yaml
+  subsystem: codestyle
+  mechanism-family: verification-change
+  concern-class: spec-fidelity
+  risk-note: Bridge configuration changes affect required verification evidence.
+project-name: codestyle
+artifact-paths:
+  root: .bridge/ephemeral
+  phases: .bridge/ephemeral/phases
+  evidence: .bridge/ephemeral/evidence
+  evaluations: .bridge/ephemeral/evaluations
+test-paths: []
+docs-paths:
+- README.md
+phases: []
+kind: project-profile
+verification-policy-path: .bridge/verification-policy.yaml
+code-paths:
+- src
+- resources
+root-path: ..
+canonical-commands:
+- id: lint
+  kind: lint
+  role: conformance
+  command: clojure -M:lint
+  description: Run clj-kondo through codestyle.lint
+- id: basic-format
+  kind: format
+  role: conformance
+  command: clojure -M:basic-format check
+  description: Check cljfmt formatting

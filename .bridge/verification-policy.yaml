@@ -1,0 +1,35 @@
+artifact: verification-policy
+policy-id: codestyle-bridge-v1
+bridge-path-sandbox:
+  enforce?: true
+  rules:
+  - path-pattern: .bridge/
+    access: none
+rules:
+- scope:
+    subsystems:
+    - codestyle
+    change-categories:
+    - code-only
+    - mixed
+    - docs-only
+    risk-classes:
+    - medium
+    - high
+  required-evidence:
+    lint: required
+    format: required
+    docs-or-nl-spec: recommended
+  evidence-roles:
+    conformance:
+    - lint
+    - format
+  omission-rules:
+    allowed?: true
+    requires-record?: true
+    required-fields:
+    - rationale
+    - owner
+  notes:
+  - Codestyle is validated by lint plus the basic-format check.
+  - advanced-format is intentionally not configured as Bridge evidence yet; Bridge forbids evidence by class, so marking format forbidden would also forbid basic-format.
