@@ -1,68 +1,55 @@
 subsystems:
 - name: codestyle
-  code-globs:
+  code_globs:
   - src/**/*.clj
   - resources/**/*.edn
-  docs-globs:
+  docs_globs:
   - README.md
-  test-globs: []
-  expected-artifacts:
-  - change-intent-card
-  - verification-brief
-  - completeness-ledger
-  expected-evidence:
+  test_globs: []
+  expected_evidence:
   - lint
   - format
-  system-category: other
-  risk-class: medium
-file-glob-rules:
+  system_category: other
+  risk_class: medium
+file_glob_rules:
 - glob: src/**/*.clj
   subsystem: codestyle
-  mechanism-family: implementation-change
-  concern-class: code-level
-  risk-note: CLI implementation changes can break downstream codestyle checks.
+  concern_class: code-level
+  risk_note: CLI implementation changes can break downstream codestyle checks.
 - glob: resources/**/*.edn
   subsystem: codestyle
-  mechanism-family: configuration-change
-  concern-class: spec-fidelity
-  risk-note: Bundled formatter configuration changes can break formatting conformance.
+  concern_class: spec-fidelity
+  risk_note: Bundled formatter configuration changes can break formatting conformance.
 - glob: README.md
   subsystem: codestyle
-  mechanism-family: documentation-change
-  concern-class: spec-fidelity
-  risk-note: Documentation changes should stay aligned with runnable aliases and CI.
+  concern_class: spec-fidelity
+  risk_note: Documentation changes should stay aligned with runnable aliases and CI.
 - glob: deps.edn
   subsystem: codestyle
-  mechanism-family: dependency-change
-  concern-class: code-level
-  risk-note: Alias changes can break the documented codestyle commands.
+  concern_class: code-level
+  risk_note: Alias changes can break the documented codestyle commands.
 - glob: .github/workflows/**/*.yml
   subsystem: codestyle
-  mechanism-family: ci-change
-  concern-class: code-level
-  risk-note: CI changes control whether Bridge evidence is enforced.
+  concern_class: code-level
+  risk_note: CI changes control whether Bridge evidence is enforced.
 - glob: .bridge/**/*.yaml
   subsystem: codestyle
-  mechanism-family: verification-change
-  concern-class: spec-fidelity
-  risk-note: Bridge configuration changes affect required verification evidence.
-project-name: codestyle
-artifact-paths:
+  concern_class: spec-fidelity
+  risk_note: Bridge configuration changes affect required verification evidence.
+project_name: codestyle
+artifact_paths:
   root: .bridge/ephemeral
-  phases: .bridge/ephemeral/phases
   evidence: .bridge/ephemeral/evidence
-  evaluations: .bridge/ephemeral/evaluations
-test-paths: []
-docs-paths:
+test_paths: []
+docs_paths:
 - README.md
-phases: []
 kind: project-profile
-verification-policy-path: .bridge/verification-policy.yaml
-code-paths:
+verification_policy_path: .bridge/verification-policy.yaml
+code_paths:
 - src
 - resources
-root-path: ..
-canonical-commands:
+root_path: ..
+canonical_commands:
 - id: lint
   kind: lint
   role: conformance
