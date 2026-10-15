@@ -69,6 +69,22 @@
            y (lookup n)] (use x y))
 ")))))
 
+(def binding-forms
+  '[let loop when-let when-some if-let if-some with-open with-redefs binding for doseq dotimes])
+
+(defn anonymous-binding-source
+  [form]
+  (str "(let [elapsed #(" form
+       " [started (System/nanoTime)] (work)"
+       " (/ (double (- (System/nanoTime) started)) 1e6))] (elapsed))"))
+
+(deftest anonymous-binding-form-guides
+  (doseq [form binding-forms]
+    (testing (str form " inside an anonymous function in a binding vector")
+      (let [source (anonymous-binding-source form)]
+        (is (= (read-string source) (read-string (format-source source))))
+        (is (= (format-source source) (format-source (format-source source))))))))
+
 (defn -main
   [& _]
   (let [{:keys [fail error]} (run-tests 'codestyle.zprint-test)]
